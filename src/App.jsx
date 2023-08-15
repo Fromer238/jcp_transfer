@@ -314,15 +314,15 @@ function App() {
   return (
     <>
       <div>
-        <label htmlFor="factory">Factory:</label>
-        <select name="factory" value={factory} onChange={factoryChange}>
+        <label class="p-4" htmlFor="factory">Factory:</label>
+        <select class="border-2 m-2 rounded-md border-lime-500" name="factory" value={factory} onChange={factoryChange}>
           <option value="factory">--select--</option>
           <option value="QVA">QVA</option>
           <option value="QVJ">QVJ</option>
         </select>
         <hr />
-        <label htmlFor="season">Season:</label>
-        <select name="season" value={season} onChange={seasonChange}>
+        <label class="p-4" htmlFor="season">Season:</label>
+        <select class="border-2 m-2 rounded-md border-lime-500" name="season" value={season} onChange={seasonChange}>
           <option value="season">--select--</option>
           <option value="SP23">SP23</option>
           <option value="SU23">SU23</option>
@@ -332,8 +332,8 @@ function App() {
           <option value="FW24">FW24</option>
         </select>
         <hr />
-        <label htmlFor="buymonth">BuyMonth:</label>
-        <select name="buymonth" value={buymonth} onChange={buymonthChange}>
+        <label class="p-4" htmlFor="buymonth">BuyMonth:</label>
+        <select class="border-2 m-2 rounded-md border-lime-500" name="buymonth" value={buymonth} onChange={buymonthChange}>
           <option value="buymonth">--select--</option>
           <option value="01-1">01-1</option>
           <option value="01-2">01-2</option>
@@ -362,8 +362,9 @@ function App() {
         </select>
       </div>
       <hr />
-      <input type="file" onChange={fileChange} />
-      <button onClick={handleClick}>開始轉檔</button>
+      <input class="p-4 " type="file" onChange={fileChange} />
+      <hr />
+      <button class="rounded-md border-2 border-lime-500 p-2 m-4 bg-green-500 text-white" onClick={handleClick}>開始轉檔</button>
     </>
   )
 }
