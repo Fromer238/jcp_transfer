@@ -330,6 +330,9 @@ function App() {
           <option value="SP24">SP24</option>
           <option value="SU24">SU24</option>
           <option value="FW24">FW24</option>
+          <option value="SP25">SP25</option>
+          <option value="SU25">SU25</option>
+          <option value="FW25">FW25</option>
         </select>
         <hr />
         <label class="p-4" htmlFor="buymonth">BuyMonth:</label>
