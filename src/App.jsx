@@ -18,42 +18,38 @@ function App() {
   const originTitleList = ["<Customer(Customer.Code)>", "<Customer/Name>", "<OrderNoPrefix>", "<IssDate(Date)>", "<Style/Shipment/Remark>", "<Season>", "<Division>", "<PrcTerm>", "<CustPORef>", "<CustPODate(Date)>", "<Style/Shipment/PortLoad>", "<Style/Style>", "<Style/CustStyle>", "<Style/Description>", "<Style/Unit>", "<Style/Shipment/ShipDate(Date)>", "<Style/Origin>", "<Style/Shipment/ShipMode>", "<Style/Shipment/ShipDest>", "<Style/Shipment/LotRef>", "<Style/Shipment/Assortment/Color>", "<Style/Shipment/PortDisc>", "<Cur>", "<ExtTerm2>", "<Style/Shipment/ExtDesc1>", "<Style/Shipment/Label>", "<Style/Shipment/ExtDesc6>", "<Style/Shipment/ExtDesc3>", "<Style/ProgramCode>", "<Style/Origin>", "<ExtTerm3>", "<ExtTerm5>", "<Style/Shipment/ExtDesc7>", "<Style/Shipment/ExtDesc8>", "<Style/Shipment/ExtDesc9>"]
   const handleClick = () => {
     // console.log(expData)
-    if (factory !== "" && season !== "" && buymonth !== "") {
-      const workbook = XLSX.utils.book_new()
-      const worksheet = XLSX.utils.json_to_sheet(expData, { origin: "A3" })
-      let title = []
-      let originTitle = []
-      for (let c = 0; ; c++) {
-        let cellAddress = XLSX.utils.encode_cell({ r: 2, c: c })
-        let cellValue = worksheet[cellAddress] ? worksheet[cellAddress].v : ""
-        if (cellValue !== "") {
-          if (originTitleList[c] !== undefined) {
-            originTitle.push(originTitleList[c])
-          } else {
-            originTitle.push("<Style/Shipment/Assortment/Size,Qty>")
-          }
-
-          if (cellValue.slice(0, 1) === "Z") {
-            cellValue = cellValue.slice(1)
-            title.push(cellValue)
-          } else {
-            title.push(cellValue)
-          }
-
+    const workbook = XLSX.utils.book_new()
+    const worksheet = XLSX.utils.json_to_sheet(expData, { origin: "A3" })
+    let title = []
+    let originTitle = []
+    for (let c = 0; ; c++) {
+      let cellAddress = XLSX.utils.encode_cell({ r: 2, c: c })
+      let cellValue = worksheet[cellAddress] ? worksheet[cellAddress].v : ""
+      if (cellValue !== "") {
+        if (originTitleList[c] !== undefined) {
+          originTitle.push(originTitleList[c])
         } else {
-          break
+          originTitle.push("<Style/Shipment/Assortment/Size,Qty>")
         }
+
+        if (cellValue.slice(0, 1) === "Z") {
+          cellValue = cellValue.slice(1)
+          title.push(cellValue)
+        } else {
+          title.push(cellValue)
+        }
+
+      } else {
+        break
       }
-      let row0 = ["Sales Order"]
-      XLSX.utils.sheet_add_aoa(worksheet, [row0], { origin: "A1" })
-      XLSX.utils.sheet_add_aoa(worksheet, [originTitle], { origin: "A2" })
-      XLSX.utils.sheet_add_aoa(worksheet, [title], { origin: "A3" })
-      XLSX.utils.book_append_sheet(workbook, worksheet, "sheet1")
-      const now = new Date()
-      XLSX.writeFileXLSX(workbook, `IG-JCP-${now.getFullYear()}${formatMonthAndDate(now.getMonth() + 1)}${now.getDate()}.xls`)
-    } else {
-      alert("請選擇Factory & Season & BuyMonth!!")
     }
+    let row0 = ["Sales Order"]
+    XLSX.utils.sheet_add_aoa(worksheet, [row0], { origin: "A1" })
+    XLSX.utils.sheet_add_aoa(worksheet, [originTitle], { origin: "A2" })
+    XLSX.utils.sheet_add_aoa(worksheet, [title], { origin: "A3" })
+    XLSX.utils.book_append_sheet(workbook, worksheet, "sheet1")
+    const now = new Date()
+    XLSX.writeFileXLSX(workbook, `IG-JCP-${now.getFullYear()}${formatMonthAndDate(now.getMonth() + 1)}${now.getDate()}.xls`)
   }
 
   const size = {
@@ -69,7 +65,7 @@ function App() {
     "SMALL PETITE": "S",
     "MEDIUM PETITE": "M",
     "LARGE PETITE": "L",
-    "X-LARGE PETITEE": "XL",
+    "X-LARGE PETITE": "XL",
     "XX-LARGE PETITE": "XXL",
     "XX-SMALL TALL": "XXS",
     "X-SMALL TALL": "XS",
@@ -95,6 +91,7 @@ function App() {
     "4X": "Z4X",
     "5X": "Z5X"
   }
+
   function formatMonthAndDate(num) {
     return num < 10 ? '0' + num : num
   }
@@ -105,66 +102,78 @@ function App() {
     reader.onload = function (e) {
       let data = e.target.result;
       let wb = XLSX.read(data, { type: 'binary' });
-      // var sheetName = wb.SheetNames[0]
-      // var sheets = wb.Sheets[sheetName]
       let sheet = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]])
       // console.log(sheet)
       let list = []
       switch (sheet[11]["__EMPTY"]) {
         case "Color Desc":
-          for (let i = 12; i < sheet.length; i++) {
-            let check = Object.hasOwn(sheet[i], "__EMPTY_2")
-
-            if (check) {
-              let date = new Date()
-              let today = `${date.getFullYear()}.${formatMonthAndDate(date.getMonth() + 1)}.${formatMonthAndDate(date.getDate())}`
-              let shipDate = sheet[3]["__EMPTY"].trim().split("/")
-              let shipDay = `${shipDate[2]}.${shipDate[0]}.${shipDate[1]}`
-              let row = {
-                "Customer": "JCP",
-                "Customer Name": "",
-                "Order No": `${season.slice(2, 4)}${season.slice(0, 1)}${buymonth.slice(0, 2)}${buymonth.slice(3, 4)}${factory.slice(2, 3)}${sheet[i]["__EMPTY_2"]}`,
-                "Order Date": today,
-                "Remark": sheet[4]["__EMPTY_8"].trim(),
-                "Season": season,
-                "Division": "KH",
-                "Price Term": "",
-                "Cust.P/O ref.": "",
-                "Cust.P/O Date": "",
-                "Port of Loading": "",
-                "Style": sheet[i]["__EMPTY_2"],
-                "Customer Style": sheet[i]["__EMPTY_2"],
-                "Description": sheet[i]["__EMPTY_4"],
-                "Qty Unit": "PCS",
-                "Ship Date": shipDay,
-                "Country of Origin": factory,
-                "Ship By": "By Sea",
-                "Ship Description": "USA",
-                "Lot Reference": `${sheet[i][" IBO Mass Print"]}-${sheet[1]["__EMPTY_6"]}`,
-                "Color": sheet[i]["__EMPTY"],
-                "Port of Discharge": "",
-                "Currency": "USD",
-                "BuyMonth": buymonth,
-                "PO Cut": `${sheet[i]["__EMPTY_3"]}`,
-                "Label": `${sheet[1]["__EMPTY"].trim()}`,
-                "PD": "",
-                "Assigned Factory": "",
-                "ProgramCode": "",
-                "Factory": factory,
-                "Order Type": "FOB",
-                "Sales Type": "",
-                "PSDD": "",
-                "FPD": "",
-                "LPD": ""
-              }
-              for (let j = i; ; j++) {
-                if (sheet[j]["__EMPTY_11"]) {
-                  row[size[sheet[j]["__EMPTY_11"]]] = sheet[j]["__EMPTY_24"]
-                } else {
+          for (let s = 12; s < sheet.length; s++) {
+            let check_reference = Object.hasOwn(sheet[s], " IBO Mass Print")
+            if (check_reference) {
+              for (let i = s; i < sheet.length; i++) {
+                if (sheet[i]["__EMPTY"] === "Item # Subtotal") {
                   break
                 }
+
+                let check = Object.hasOwn(sheet[i], "__EMPTY_2")
+
+                if (check) {
+                  let date = new Date()
+                  let today = `${date.getFullYear()}.${formatMonthAndDate(date.getMonth() + 1)}.${formatMonthAndDate(date.getDate())}`
+                  let shipDate = sheet[3]["__EMPTY"].trim().split("/")
+                  let shipDay = `${shipDate[2]}.${shipDate[0]}.${shipDate[1]}`
+                  let row = {
+                    "Customer": "JCP",
+                    "Customer Name": "",
+                    "Order No": `${season.slice(2, 4)}${season.slice(0, 1)}${buymonth.slice(0, 2)}${buymonth.slice(3, 4)}${factory.slice(2, 3)}${sheet[i]["__EMPTY_2"]}`,
+                    "Order Date": today,
+                    "Remark": sheet[4]["__EMPTY_8"].trim(),
+                    "Season": season,
+                    "Division": "KH",
+                    "Price Term": "",
+                    "Cust.P/O ref.": "",
+                    "Cust.P/O Date": "",
+                    "Port of Loading": "",
+                    "Style": sheet[i]["__EMPTY_2"],
+                    "Customer Style": sheet[i]["__EMPTY_2"],
+                    "Description": sheet[i]["__EMPTY_4"],
+                    "Qty Unit": "PCS",
+                    "Ship Date": shipDay,
+                    "Country of Origin": factory,
+                    "Ship By": "By Sea",
+                    "Ship Description": "USA",
+                    "Lot Reference": `${sheet[s][" IBO Mass Print"]}-${sheet[1]["__EMPTY_6"]}`,
+                    "Color": sheet[i]["__EMPTY"],
+                    "Port of Discharge": "",
+                    "Currency": "USD",
+                    "BuyMonth": buymonth,
+                    "PO Cut": `${sheet[i]["__EMPTY_3"]}`,
+                    "Label": `${sheet[1]["__EMPTY"].trim()}`,
+                    "PD": "",
+                    "Assigned Factory": "",
+                    "ProgramCode": "",
+                    "Factory": factory,
+                    "Order Type": "FOB",
+                    "Sales Type": "",
+                    "PSDD": "",
+                    "FPD": "",
+                    "LPD": ""
+                  }
+                  for (let j = i; ; j++) {
+                    if (sheet[j]["__EMPTY_11"] && sheet[j]["__EMPTY_24"]) {
+                      row[size[sheet[j]["__EMPTY_11"]]] = sheet[j]["__EMPTY_24"]
+                    } else if (sheet[j]["__EMPTY_11"] && sheet[j]["__EMPTY_25"]) {
+                      row[size[sheet[j]["__EMPTY_11"]]] = sheet[j]["__EMPTY_25"]
+                    } else {
+                      break
+                    }
+                  }
+                  list.push(row)
+                } else {
+                  continue
+                }
               }
-              list.push(row)
+
             } else {
               continue
             }
@@ -182,7 +191,6 @@ function App() {
               let shipDay = `${shipDate[2]}.${shipDate[0]}.${shipDate[1]}`
               let styleDesc = sheet[i]["__EMPTY_24"].split(":")
               let style = styleDesc[0]
-              // console.log(sheet[i]["__EMPTY_24"])
               let row = {
                 "Customer": "JCP",
                 "Customer Name": "",
@@ -245,9 +253,6 @@ function App() {
                   let today = `${date.getFullYear()}.${formatMonthAndDate(date.getMonth() + 1)}.${formatMonthAndDate(date.getDate())}`
                   let shipDate = sheet[3]["__EMPTY_2"].trim().split("/")
                   let shipDay = `${shipDate[2]}.${shipDate[0]}.${shipDate[1]}`
-                  // let styleDesc = sheet[i]["__EMPTY_24"].split(":")
-                  // let style = styleDesc[0]
-                  // console.log(sheet[i]["__EMPTY_24"])
                   let row = {
                     "Customer": "JCP",
                     "Customer Name": "",
@@ -325,9 +330,6 @@ function App() {
           <option value="SP24">SP24</option>
           <option value="SU24">SU24</option>
           <option value="FW24">FW24</option>
-          <option value="SP25">SP25</option>
-          <option value="SU25">SU25</option>
-          <option value="FW25">FW25</option>
         </select>
         <hr />
         <label htmlFor="buymonth">BuyMonth:</label>
@@ -360,12 +362,8 @@ function App() {
         </select>
       </div>
       <hr />
-      <br />
-      <input type="file" name="file" onChange={fileChange} />
-      <br />
-      <br />
-      <br />
-      <button onClick={handleClick} style={{ border: "solid", cursor: "pointer", padding: "6px" }}>開始轉檔</button>
+      <input type="file" onChange={fileChange} />
+      <button onClick={handleClick}>開始轉檔</button>
     </>
   )
 }
