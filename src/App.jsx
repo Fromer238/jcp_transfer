@@ -89,7 +89,17 @@ function App() {
     "2X": "Z2X",
     "3X": "Z3X",
     "4X": "Z4X",
-    "5X": "Z5X"
+    "5X": "Z5X",
+    "2 TALL": "Z2 TALL",
+    "4 TALL": "Z4 TALL",
+    "6 TALL": "Z6 TALL",
+    "8 TALL": "Z8 TALL",
+    "10 TALL": "Z10 TALL",
+    "12 TALL": "Z12 TALL",
+    "14 TALL": "Z14 TALL",
+    "16 TALL": "Z16 TALL",
+    "18 TALL": "Z18 TALL",
+    "20 TALL": "Z20 TALL",
   }
 
   function formatMonthAndDate(num) {
