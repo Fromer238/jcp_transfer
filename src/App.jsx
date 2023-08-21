@@ -100,6 +100,24 @@ function App() {
     "16 TALL": "Z16 TALL",
     "18 TALL": "Z18 TALL",
     "20 TALL": "Z20 TALL",
+    "2 PETITE": "Z2 PETITE",
+    "4 PETITE": "Z4 PETITE",
+    "6 PETITE": "Z6 PETITE",
+    "8 PETITE": "Z8 PETITE",
+    "10 PETITE": "Z10 PETITE",
+    "12 PETITE": "Z12 PETITE",
+    "14 PETITE": "Z14 PETITE",
+    "16 PETITE": "Z16 PETITE",
+    "18 PETITE": "Z18 PETITE",
+    "20 PETITE": "Z20 PETITE",
+    "16W": "Z16W",
+    "18W": "Z18W",
+    "20W": "Z20W",
+    "22W": "Z22W",
+    "24W": "Z24W",
+    "26W": "Z26W",
+    "28W": "Z28W",
+    "30W": "Z30W",
   }
 
   function formatMonthAndDate(num) {
@@ -112,227 +130,284 @@ function App() {
     reader.onload = function (e) {
       let data = e.target.result;
       let wb = XLSX.read(data, { type: 'binary' });
-      let sheet = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]])
+      // let sheet = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]])
+      console.log(wb)
       // console.log(sheet)
+      // console.log(sheet[11]["__EMPTY"])
       let list = []
-      switch (sheet[11]["__EMPTY"]) {
-        case "Color Desc":
-          for (let s = 12; s < sheet.length; s++) {
-            let check_reference = Object.hasOwn(sheet[s], " IBO Mass Print")
-            if (check_reference) {
-              for (let i = s; i < sheet.length; i++) {
-                if (sheet[i]["__EMPTY"] === "Item # Subtotal") {
-                  break
-                }
-
-                let check = Object.hasOwn(sheet[i], "__EMPTY_2")
-
-                if (check) {
-                  let date = new Date()
-                  let today = `${date.getFullYear()}.${formatMonthAndDate(date.getMonth() + 1)}.${formatMonthAndDate(date.getDate())}`
-                  let shipDate = sheet[3]["__EMPTY"].trim().split("/")
-                  let shipDay = `${shipDate[2]}.${shipDate[0]}.${shipDate[1]}`
-                  let row = {
-                    "Customer": "JCP",
-                    "Customer Name": "",
-                    "Order No": `${season.slice(2, 4)}${season.slice(0, 1)}${buymonth.slice(0, 2)}${buymonth.slice(3, 4)}${factory.slice(2, 3)}${sheet[i]["__EMPTY_2"]}`,
-                    "Order Date": today,
-                    "Remark": sheet[4]["__EMPTY_8"].trim(),
-                    "Season": season,
-                    "Division": "KH",
-                    "Price Term": "",
-                    "Cust.P/O ref.": "",
-                    "Cust.P/O Date": "",
-                    "Port of Loading": "",
-                    "Style": sheet[i]["__EMPTY_2"],
-                    "Customer Style": sheet[i]["__EMPTY_2"],
-                    "Description": sheet[i]["__EMPTY_4"],
-                    "Qty Unit": "PCS",
-                    "Ship Date": shipDay,
-                    "Country of Origin": factory,
-                    "Ship By": "By Sea",
-                    "Ship Description": "USA",
-                    "Lot Reference": `${sheet[s][" IBO Mass Print"]}-${sheet[1]["__EMPTY_6"]}`,
-                    "Color": sheet[i]["__EMPTY"],
-                    "Port of Discharge": "",
-                    "Currency": "USD",
-                    "BuyMonth": buymonth,
-                    "PO Cut": `${sheet[i]["__EMPTY_3"]}`,
-                    "Label": `${sheet[1]["__EMPTY"].trim()}`,
-                    "PD": "",
-                    "Assigned Factory": "",
-                    "ProgramCode": "",
-                    "Factory": factory,
-                    "Order Type": "FOB",
-                    "Sales Type": "",
-                    "PSDD": "",
-                    "FPD": "",
-                    "LPD": ""
+      for (let name of wb.SheetNames) {
+        let sheet = XLSX.utils.sheet_to_json(wb.Sheets[name])
+        // console.log(sheet)
+        switch (sheet[11]["__EMPTY"]) {
+          case "Color Desc":
+            for (let s = 12; s < sheet.length; s++) {
+              let check_reference = Object.hasOwn(sheet[s], " IBO Mass Print")
+              if (check_reference) {
+                for (let i = s; i < sheet.length; i++) {
+                  if (sheet[i]["__EMPTY"] === "Item # Subtotal") {
+                    break
                   }
-                  for (let j = i; ; j++) {
-                    if (sheet[j]["__EMPTY_11"] && sheet[j]["__EMPTY_24"]) {
-                      row[size[sheet[j]["__EMPTY_11"]]] = sheet[j]["__EMPTY_24"]
-                    } else if (sheet[j]["__EMPTY_11"] && sheet[j]["__EMPTY_25"]) {
-                      row[size[sheet[j]["__EMPTY_11"]]] = sheet[j]["__EMPTY_25"]
-                    } else {
-                      break
+
+                  let check = Object.hasOwn(sheet[i], "__EMPTY_2")
+
+                  if (check) {
+                    let date = new Date()
+                    let today = `${date.getFullYear()}.${formatMonthAndDate(date.getMonth() + 1)}.${formatMonthAndDate(date.getDate())}`
+                    let shipDate = sheet[3]["__EMPTY"].trim().split("/")
+                    let shipDay = `${shipDate[2]}.${shipDate[0]}.${shipDate[1]}`
+                    const styleCode = () => {
+                      const sizeStr = sheet[i]["__EMPTY_11"]
+                      const sizeLastWord = sizeStr[sizeStr.length - 1]
+                      switch (sizeLastWord) {
+                        case "E":
+                          return "P"
+                        case "L":
+                          return "T"
+                        case "W":
+                          return "W"
+                        case "X":
+                          return "W"
+                        default:
+                          return "M"
+                      }
                     }
-                  }
-                  list.push(row)
-                } else {
-                  continue
-                }
-              }
-
-            } else {
-              continue
-            }
-          }
-          setExpData([...list])
-          break
-        case "Pack Item #":
-          for (let i = 12; i < sheet.length; i++) {
-            let check = Object.hasOwn(sheet[i], "__EMPTY_9")
-
-            if (check) {
-              let date = new Date()
-              let today = `${date.getFullYear()}.${formatMonthAndDate(date.getMonth() + 1)}.${formatMonthAndDate(date.getDate())}`
-              let shipDate = sheet[3]["__EMPTY_1"].trim().split("/")
-              let shipDay = `${shipDate[2]}.${shipDate[0]}.${shipDate[1]}`
-              let styleDesc = sheet[i]["__EMPTY_24"].split(":")
-              let style = styleDesc[0]
-              let row = {
-                "Customer": "JCP",
-                "Customer Name": "",
-                "Order No": `${season.slice(2, 4)}${season.slice(0, 1)}${buymonth.slice(0, 2)}${buymonth.slice(3, 4)}${factory.slice(2, 3)}${sheet[i]["__EMPTY_9"]}`,
-                "Order Date": today,
-                "Remark": sheet[4]["__EMPTY_15"].trim(),
-                "Season": season,
-                "Division": "KH",
-                "Price Term": "",
-                "Cust.P/O ref.": "",
-                "Cust.P/O Date": "",
-                "Port of Loading": "",
-                "Style": sheet[i]["__EMPTY_9"],
-                "Customer Style": sheet[i]["__EMPTY_9"],
-                "Description": style,
-                "Qty Unit": "PCS",
-                "Ship Date": shipDay,
-                "Country of Origin": factory,
-                "Ship By": "By Sea",
-                "Ship Description": "USA",
-                "Lot Reference": `${sheet[i]["__EMPTY"]}-${sheet[1]["__EMPTY_10"].trim()}`,
-                "Color": sheet[i]["__EMPTY_25"],
-                "Port of Discharge": "",
-                "Currency": "USD",
-                "BuyMonth": buymonth,
-                "PO Cut": `${sheet[i]["__EMPTY_8"]}`,
-                "Label": `${sheet[1]["__EMPTY_1"].trim()}`,
-                "PD": "",
-                "Assigned Factory": "",
-                "ProgramCode": "",
-                "Factory": factory,
-                "Order Type": "FOB",
-                "Sales Type": "",
-                "PSDD": "",
-                "FPD": "",
-                "LPD": ""
-              }
-              for (let j = i; j < sheet.length; j++) {
-                if (sheet[j]["__EMPTY_26"]) {
-                  row[size[sheet[j]["__EMPTY_26"]]] = sheet[j]["__EMPTY_34"]
-                } else {
-                  break
-                }
-              }
-              list.push(row)
-            } else {
-              continue
-            }
-          }
-          setExpData([...list])
-          break
-        case "Item #":
-          for (let a = 12; a < sheet.length; a++) {
-            let check_0 = Object.hasOwn(sheet[a], "__EMPTY")
-            if (check_0) {
-              for (let i = a; i < sheet.length; i++) {
-                let check_1 = Object.hasOwn(sheet[i], "__EMPTY_5")
-                if (check_1) {
-                  let date = new Date()
-                  let today = `${date.getFullYear()}.${formatMonthAndDate(date.getMonth() + 1)}.${formatMonthAndDate(date.getDate())}`
-                  let shipDate = sheet[3]["__EMPTY_2"].trim().split("/")
-                  let shipDay = `${shipDate[2]}.${shipDate[0]}.${shipDate[1]}`
-                  let row = {
-                    "Customer": "JCP",
-                    "Customer Name": "",
-                    "Order No": `${season.slice(2, 4)}${season.slice(0, 1)}${buymonth.slice(0, 2)}${buymonth.slice(3, 4)}${factory.slice(2, 3)}${sheet[i]["__EMPTY_5"]}`,
-                    "Order Date": today,
-                    "Remark": sheet[4]["__EMPTY_19"].trim(),
-                    "Season": season,
-                    "Division": "KH",
-                    "Price Term": "",
-                    "Cust.P/O ref.": "",
-                    "Cust.P/O Date": "",
-                    "Port of Loading": "",
-                    "Style": sheet[i]["__EMPTY_5"],
-                    "Customer Style": sheet[i]["__EMPTY_5"],
-                    "Description": sheet[i]["__EMPTY_7"],
-                    "Qty Unit": "PCS",
-                    "Ship Date": shipDay,
-                    "Country of Origin": factory,
-                    "Ship By": "By Sea",
-                    "Ship Description": "USA",
-                    "Lot Reference": `${sheet[a]["__EMPTY"]}-${sheet[1]["__EMPTY_10"].trim()}`,
-                    "Color": sheet[i]["__EMPTY_1"],
-                    "Port of Discharge": "",
-                    "Currency": "USD",
-                    "BuyMonth": buymonth,
-                    "PO Cut": `${sheet[i]["__EMPTY_6"]}`,
-                    "Label": `${sheet[1]["__EMPTY_2"].trim()}`,
-                    "PD": "",
-                    "Assigned Factory": "",
-                    "ProgramCode": "",
-                    "Factory": factory,
-                    "Order Type": "FOB",
-                    "Sales Type": "",
-                    "PSDD": "",
-                    "FPD": "",
-                    "LPD": ""
-                  }
-                  for (let j = i; j < sheet.length; j++) {
-                    if (sheet[j]["__EMPTY_16"]) {
-                      row[size[sheet[j]["__EMPTY_16"]]] = sheet[j]["__EMPTY_31"]
-                    } else {
-                      break
+                    let row = {
+                      "Customer": "JCP",
+                      "Customer Name": "",
+                      "Order No": `${season.slice(2, 4)}${season.slice(0, 1)}${buymonth.slice(0, 2)}${buymonth.slice(3, 4)}${factory.slice(2, 3)}${sheet[i]["__EMPTY_2"]}${styleCode()}`,
+                      "Order Date": today,
+                      "Remark": sheet[4]["__EMPTY_8"].trim(),
+                      "Season": season,
+                      "Division": "KH",
+                      "Price Term": "",
+                      "Cust.P/O ref.": "",
+                      "Cust.P/O Date": "",
+                      "Port of Loading": "",
+                      "Style": `${sheet[i]["__EMPTY_2"]}${styleCode()}`,
+                      "Customer Style": sheet[i]["__EMPTY_2"],
+                      "Description": sheet[i]["__EMPTY_4"],
+                      "Qty Unit": "PCS",
+                      "Ship Date": shipDay,
+                      "Country of Origin": factory,
+                      "Ship By": "By Sea",
+                      "Ship Description": "USA",
+                      "Lot Reference": `${sheet[s][" IBO Mass Print"]}-${sheet[1]["__EMPTY_6"]}`,
+                      "Color": sheet[i]["__EMPTY"],
+                      "Port of Discharge": "",
+                      "Currency": "USD",
+                      "BuyMonth": buymonth,
+                      "PO Cut": `${sheet[i]["__EMPTY_3"]}`,
+                      "Label": `${sheet[1]["__EMPTY"].trim()}`,
+                      "PD": "",
+                      "Assigned Factory": "",
+                      "ProgramCode": "",
+                      "Factory": factory,
+                      "Order Type": "FOB",
+                      "Sales Type": "",
+                      "PSDD": "",
+                      "FPD": "",
+                      "LPD": ""
                     }
+                    for (let j = i; ; j++) {
+                      if (sheet[j]["__EMPTY_11"] && sheet[j]["__EMPTY_24"]) {
+                        row[size[sheet[j]["__EMPTY_11"]]] = sheet[j]["__EMPTY_24"]
+                      } else if (sheet[j]["__EMPTY_11"] && sheet[j]["__EMPTY_25"]) {
+                        row[size[sheet[j]["__EMPTY_11"]]] = sheet[j]["__EMPTY_25"]
+                      } else {
+                        break
+                      }
+                    }
+                    list.push(row)
+                  } else {
+                    continue
                   }
-                  list.push(row)
-                } else {
-                  continue
                 }
+
+              } else {
+                continue
               }
-              setExpData([...list])
-            } else {
-              continue
             }
-          }
-          break
+            setExpData([...list])
+            break
+          case "Pack Item #":
+            for (let i = 12; i < sheet.length; i++) {
+              let check = Object.hasOwn(sheet[i], "__EMPTY_9")
+
+              if (check) {
+                let date = new Date()
+                let today = `${date.getFullYear()}.${formatMonthAndDate(date.getMonth() + 1)}.${formatMonthAndDate(date.getDate())}`
+                let shipDate = sheet[3]["__EMPTY_1"].trim().split("/")
+                let shipDay = `${shipDate[2]}.${shipDate[0]}.${shipDate[1]}`
+                let styleDesc = sheet[i]["__EMPTY_24"].split(":")
+                let style = styleDesc[0]
+                const styleCode = () => {
+                  const sizeStr = sheet[i]["__EMPTY_26"]
+                  const sizeLastWord = sizeStr[sizeStr.length - 1]
+                  switch (sizeLastWord) {
+                    case "E":
+                      return "P"
+                    case "L":
+                      return "T"
+                    case "W":
+                      return "W"
+                    case "X":
+                      return "W"
+                    default:
+                      return "M"
+                  }
+                }
+
+                let row = {
+                  "Customer": "JCP",
+                  "Customer Name": "",
+                  "Order No": `${season.slice(2, 4)}${season.slice(0, 1)}${buymonth.slice(0, 2)}${buymonth.slice(3, 4)}${factory.slice(2, 3)}${sheet[i]["__EMPTY_9"]}${styleCode()}`,
+                  "Order Date": today,
+                  "Remark": sheet[4]["__EMPTY_15"].trim(),
+                  "Season": season,
+                  "Division": "KH",
+                  "Price Term": "",
+                  "Cust.P/O ref.": "",
+                  "Cust.P/O Date": "",
+                  "Port of Loading": "",
+                  "Style": `${sheet[i]["__EMPTY_9"]}${styleCode()}`,
+                  "Customer Style": sheet[i]["__EMPTY_9"],
+                  "Description": style,
+                  "Qty Unit": "PCS",
+                  "Ship Date": shipDay,
+                  "Country of Origin": factory,
+                  "Ship By": "By Sea",
+                  "Ship Description": "USA",
+                  "Lot Reference": `${sheet[i]["__EMPTY"]}-${sheet[1]["__EMPTY_10"].trim()}`,
+                  "Color": sheet[i]["__EMPTY_25"],
+                  "Port of Discharge": "",
+                  "Currency": "USD",
+                  "BuyMonth": buymonth,
+                  "PO Cut": `${sheet[i]["__EMPTY_8"]}`,
+                  "Label": `${sheet[1]["__EMPTY_1"].trim()}`,
+                  "PD": "",
+                  "Assigned Factory": "",
+                  "ProgramCode": "",
+                  "Factory": factory,
+                  "Order Type": "FOB",
+                  "Sales Type": "",
+                  "PSDD": "",
+                  "FPD": "",
+                  "LPD": ""
+                }
+                for (let j = i; j < sheet.length; j++) {
+                  if (sheet[j]["__EMPTY_26"]) {
+                    row[size[sheet[j]["__EMPTY_26"]]] = sheet[j]["__EMPTY_34"]
+                  } else {
+                    break
+                  }
+                }
+                list.push(row)
+              } else {
+                continue
+              }
+            }
+            setExpData([...list])
+            break
+          case "Item #":
+            for (let a = 12; a < sheet.length; a++) {
+              let check_0 = Object.hasOwn(sheet[a], "__EMPTY")
+              if (check_0) {
+                for (let i = a; i < sheet.length; i++) {
+                  let check_1 = Object.hasOwn(sheet[i], "__EMPTY_5")
+                  if (check_1) {
+                    let date = new Date()
+                    let today = `${date.getFullYear()}.${formatMonthAndDate(date.getMonth() + 1)}.${formatMonthAndDate(date.getDate())}`
+                    let shipDate = sheet[3]["__EMPTY_2"].trim().split("/")
+                    let shipDay = `${shipDate[2]}.${shipDate[0]}.${shipDate[1]}`
+                    const styleCode = () => {
+                      const sizeStr = sheet[i]["__EMPTY_26"]
+                      const sizeLastWord = sizeStr[sizeStr.length - 1]
+                      switch (sizeLastWord) {
+                        case "E":
+                          return "P"
+                        case "L":
+                          return "T"
+                        case "W":
+                          return "W"
+                        case "X":
+                          return "W"
+                        default:
+                          return "M"
+                      }
+                    }
+                    let row = {
+                      "Customer": "JCP",
+                      "Customer Name": "",
+                      "Order No": `${season.slice(2, 4)}${season.slice(0, 1)}${buymonth.slice(0, 2)}${buymonth.slice(3, 4)}${factory.slice(2, 3)}${sheet[i]["__EMPTY_5"]}${styleCode()}`,
+                      "Order Date": today,
+                      "Remark": sheet[4]["__EMPTY_19"].trim(),
+                      "Season": season,
+                      "Division": "KH",
+                      "Price Term": "",
+                      "Cust.P/O ref.": "",
+                      "Cust.P/O Date": "",
+                      "Port of Loading": "",
+                      "Style": `${sheet[i]["__EMPTY_5"]}${styleCode()}`,
+                      "Customer Style": sheet[i]["__EMPTY_5"],
+                      "Description": sheet[i]["__EMPTY_7"],
+                      "Qty Unit": "PCS",
+                      "Ship Date": shipDay,
+                      "Country of Origin": factory,
+                      "Ship By": "By Sea",
+                      "Ship Description": "USA",
+                      "Lot Reference": `${sheet[a]["__EMPTY"]}-${sheet[1]["__EMPTY_14"].trim()}`,
+                      "Color": sheet[i]["__EMPTY_1"],
+                      "Port of Discharge": "",
+                      "Currency": "USD",
+                      "BuyMonth": buymonth,
+                      "PO Cut": `${sheet[i]["__EMPTY_6"]}`,
+                      "Label": `${sheet[1]["__EMPTY_2"].trim()}`,
+                      "PD": "",
+                      "Assigned Factory": "",
+                      "ProgramCode": "",
+                      "Factory": factory,
+                      "Order Type": "FOB",
+                      "Sales Type": "",
+                      "PSDD": "",
+                      "FPD": "",
+                      "LPD": ""
+                    }
+                    for (let j = i; j < sheet.length; j++) {
+                      if (sheet[j]["__EMPTY_16"]) {
+                        row[size[sheet[j]["__EMPTY_16"]]] = sheet[j]["__EMPTY_31"]
+                      } else {
+                        break
+                      }
+                    }
+                    list.push(row)
+                  } else {
+                    continue
+                  }
+                }
+
+              } else {
+                continue
+              }
+            }
+            break
+        }
       }
+      setExpData([...list])
+
     }
   }
   return (
     <>
       <div>
-        <label class="p-4" htmlFor="factory">Factory:</label>
-        <select class="border-2 m-2 rounded-md border-lime-500" name="factory" value={factory} onChange={factoryChange}>
+        <label className="p-4" htmlFor="factory">Factory:</label>
+        <select className="border-2 m-2 rounded-md border-lime-500" name="factory" value={factory} onChange={factoryChange}>
           <option value="factory">--select--</option>
           <option value="QVA">QVA</option>
           <option value="QVJ">QVJ</option>
         </select>
         <hr />
-        <label class="p-4" htmlFor="season">Season:</label>
-        <select class="border-2 m-2 rounded-md border-lime-500" name="season" value={season} onChange={seasonChange}>
+        <label className="p-4" htmlFor="season">Season:</label>
+        <select className="border-2 m-2 rounded-md border-lime-500" name="season" value={season} onChange={seasonChange}>
           <option value="season">--select--</option>
           <option value="SP23">SP23</option>
           <option value="SU23">SU23</option>
@@ -345,8 +420,8 @@ function App() {
           <option value="FW25">FW25</option>
         </select>
         <hr />
-        <label class="p-4" htmlFor="buymonth">BuyMonth:</label>
-        <select class="border-2 m-2 rounded-md border-lime-500" name="buymonth" value={buymonth} onChange={buymonthChange}>
+        <label className="p-4" htmlFor="buymonth">BuyMonth:</label>
+        <select className="border-2 m-2 rounded-md border-lime-500" name="buymonth" value={buymonth} onChange={buymonthChange}>
           <option value="buymonth">--select--</option>
           <option value="01-1">01-1</option>
           <option value="01-2">01-2</option>
@@ -375,9 +450,9 @@ function App() {
         </select>
       </div>
       <hr />
-      <input class="p-4 " type="file" onChange={fileChange} />
+      <input className="p-4 " type="file" onChange={fileChange} />
       <hr />
-      <button class="rounded-md border-2 border-lime-500 p-2 m-4 bg-green-500 text-white" onClick={handleClick}>開始轉檔</button>
+      <button className="rounded-md border-2 border-lime-500 p-2 m-4 bg-green-500 text-white" onClick={handleClick}>開始轉檔</button>
     </>
   )
 }
