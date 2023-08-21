@@ -131,7 +131,7 @@ function App() {
       let data = e.target.result;
       let wb = XLSX.read(data, { type: 'binary' });
       // let sheet = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]])
-      console.log(wb)
+      // console.log(wb)
       // console.log(sheet)
       // console.log(sheet[11]["__EMPTY"])
       let list = []
