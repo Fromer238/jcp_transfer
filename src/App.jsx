@@ -6,6 +6,7 @@ function App() {
   const [season, setSeason] = useState("")
   const [buymonth, setBuymonth] = useState("")
   const [expData, setExpData] = useState([])
+  const [error, setError] = useState([])
   const factoryChange = (e) => {
     setFactory(e.target.value)
   }
@@ -18,38 +19,46 @@ function App() {
   const originTitleList = ["<Customer(Customer.Code)>", "<Customer/Name>", "<OrderNoPrefix>", "<IssDate(Date)>", "<Style/Shipment/Remark>", "<Season>", "<Division>", "<PrcTerm>", "<CustPORef>", "<CustPODate(Date)>", "<Style/Shipment/PortLoad>", "<Style/Style>", "<Style/CustStyle>", "<Style/Description>", "<Style/Unit>", "<Style/Shipment/ShipDate(Date)>", "<Style/Origin>", "<Style/Shipment/ShipMode>", "<Style/Shipment/ShipDest>", "<Style/Shipment/LotRef>", "<Style/Shipment/Assortment/Color>", "<Style/Shipment/PortDisc>", "<Cur>", "<ExtTerm2>", "<Style/Shipment/ExtDesc1>", "<Style/Shipment/Label>", "<Style/Shipment/ExtDesc6>", "<Style/Shipment/ExtDesc3>", "<Style/ProgramCode>", "<Style/Origin>", "<ExtTerm3>", "<ExtTerm5>", "<Style/Shipment/ExtDesc7>", "<Style/Shipment/ExtDesc8>", "<Style/Shipment/ExtDesc9>"]
   const handleClick = () => {
     // console.log(expData)
-    const workbook = XLSX.utils.book_new()
-    const worksheet = XLSX.utils.json_to_sheet(expData, { origin: "A3" })
-    let title = []
-    let originTitle = []
-    for (let c = 0; ; c++) {
-      let cellAddress = XLSX.utils.encode_cell({ r: 2, c: c })
-      let cellValue = worksheet[cellAddress] ? worksheet[cellAddress].v : ""
-      if (cellValue !== "") {
-        if (originTitleList[c] !== undefined) {
-          originTitle.push(originTitleList[c])
-        } else {
-          originTitle.push("<Style/Shipment/Assortment/Size,Qty>")
-        }
+    if (error.length === 0) {
+      const workbook = XLSX.utils.book_new()
+      const worksheet = XLSX.utils.json_to_sheet(expData, { origin: "A3" })
+      let title = []
+      let originTitle = []
+      for (let c = 0; ; c++) {
+        let cellAddress = XLSX.utils.encode_cell({ r: 2, c: c })
+        let cellValue = worksheet[cellAddress] ? worksheet[cellAddress].v : ""
+        if (cellValue !== "") {
+          if (originTitleList[c] !== undefined) {
+            originTitle.push(originTitleList[c])
+          } else {
+            originTitle.push("<Style/Shipment/Assortment/Size,Qty>")
+          }
 
-        if (cellValue.slice(0, 1) === "Z") {
-          cellValue = cellValue.slice(1)
-          title.push(cellValue)
-        } else {
-          title.push(cellValue)
-        }
+          if (cellValue.slice(0, 1) === "Z") {
+            cellValue = cellValue.slice(1)
+            title.push(cellValue)
+          } else {
+            title.push(cellValue)
+          }
 
-      } else {
-        break
+        } else {
+          break
+        }
       }
+      let row0 = ["Sales Order"]
+      XLSX.utils.sheet_add_aoa(worksheet, [row0], { origin: "A1" })
+      XLSX.utils.sheet_add_aoa(worksheet, [originTitle], { origin: "A2" })
+      XLSX.utils.sheet_add_aoa(worksheet, [title], { origin: "A3" })
+      XLSX.utils.book_append_sheet(workbook, worksheet, "sheet1")
+      const now = new Date()
+      XLSX.writeFileXLSX(workbook, `IG-JCP-${now.getFullYear()}${formatMonthAndDate(now.getMonth() + 1)}${now.getDate()}.xls`)
+    } else {
+      let errorStr = ""
+      error.forEach(e => {
+        errorStr = errorStr + ',' + e
+      })
+      alert(`工作表名稱:${errorStr}格式錯誤!`)
     }
-    let row0 = ["Sales Order"]
-    XLSX.utils.sheet_add_aoa(worksheet, [row0], { origin: "A1" })
-    XLSX.utils.sheet_add_aoa(worksheet, [originTitle], { origin: "A2" })
-    XLSX.utils.sheet_add_aoa(worksheet, [title], { origin: "A3" })
-    XLSX.utils.book_append_sheet(workbook, worksheet, "sheet1")
-    const now = new Date()
-    XLSX.writeFileXLSX(workbook, `IG-JCP-${now.getFullYear()}${formatMonthAndDate(now.getMonth() + 1)}${now.getDate()}.xls`)
   }
 
   const size = {
@@ -120,7 +129,7 @@ function App() {
     "30W": "Z30W",
   }
 
-  function formatMonthAndDate(num) {
+  const formatMonthAndDate = (num) => {
     return num < 10 ? '0' + num : num
   }
   const fileChange = (e) => {
@@ -135,6 +144,7 @@ function App() {
       // console.log(sheet)
       // console.log(sheet[11]["__EMPTY"])
       let list = []
+      let errorList = []
       for (let name of wb.SheetNames) {
         let sheet = XLSX.utils.sheet_to_json(wb.Sheets[name])
         // console.log(sheet)
@@ -390,10 +400,16 @@ function App() {
               }
             }
             break
+          default:
+            errorList.push(name)
+            break
         }
       }
-      setExpData([...list])
-
+      if (errorList.length !== 0) {
+        setError([...errorList])
+      } else {
+        setExpData([...list])
+      }      
     }
   }
   return (
@@ -409,15 +425,18 @@ function App() {
         <label className="p-4" htmlFor="season">Season:</label>
         <select className="border-2 m-2 rounded-md border-lime-500" name="season" value={season} onChange={seasonChange}>
           <option value="season">--select--</option>
-          <option value="SP23">SP23</option>
-          <option value="SU23">SU23</option>
-          <option value="FW23">FW23</option>
           <option value="SP24">SP24</option>
           <option value="SU24">SU24</option>
+          <option value="FA24">FA24</option>
           <option value="FW24">FW24</option>
           <option value="SP25">SP25</option>
           <option value="SU25">SU25</option>
+          <option value="FA25">FA25</option>
           <option value="FW25">FW25</option>
+          <option value="SP26">SP26</option>
+          <option value="SU26">SU26</option>
+          <option value="FA26">FA26</option>
+          <option value="FW26">FW26</option>
         </select>
         <hr />
         <label className="p-4" htmlFor="buymonth">BuyMonth:</label>
