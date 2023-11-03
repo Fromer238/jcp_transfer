@@ -120,16 +120,16 @@ function App() {
     "16 TALL": "Z16 TALL",
     "18 TALL": "Z18 TALL",
     "20 TALL": "Z20 TALL",
-    "2 PETITE": "Z2 PETITE",
-    "4 PETITE": "Z4 PETITE",
-    "6 PETITE": "Z6 PETITE",
-    "8 PETITE": "Z8 PETITE",
-    "10 PETITE": "Z10 PETITE",
-    "12 PETITE": "Z12 PETITE",
-    "14 PETITE": "Z14 PETITE",
-    "16 PETITE": "Z16 PETITE",
-    "18 PETITE": "Z18 PETITE",
-    "20 PETITE": "Z20 PETITE",
+    "2 PETITE": "Z2P",
+    "4 PETITE": "Z4P",
+    "6 PETITE": "Z6P",
+    "8 PETITE": "Z8P",
+    "10 PETITE": "Z10P",
+    "12 PETITE": "Z12P",
+    "14 PETITE": "Z14P",
+    "16 PETITE": "Z16P",
+    "18 PETITE": "Z18P",
+    "20 PETITE": "Z20P",
     "16W": "Z16W",
     "18W": "Z18W",
     "20W": "Z20W",
@@ -474,6 +474,7 @@ function App() {
         setError([...errorList])
       } else {
         setExpData([...list])
+        console.log(expData)
       }
     }
   }
