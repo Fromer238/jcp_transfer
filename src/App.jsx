@@ -18,7 +18,6 @@ function App() {
   }
   const originTitleList = ["<Customer(Customer.Code)>", "<Customer/Name>", "<OrderNoPrefix>", "<IssDate(Date)>", "<Style/Shipment/Remark>", "<Season>", "<Division>", "<PrcTerm>", "<CustPORef>", "<CustPODate(Date)>", "<Style/Shipment/PortLoad>", "<Style/Style>", "<Style/CustStyle>", "<Style/Description>", "<Style/Unit>", "<Style/Shipment/ShipDate(Date)>", "<Style/Origin>", "<Style/Shipment/ShipMode>", "<Style/Shipment/ShipDest>", "<Style/Shipment/LotRef>", "<Style/Shipment/Assortment/Color>", "<Style/Shipment/PortDisc>", "<Cur>", "<ExtTerm2>", "<Style/Shipment/ExtDesc1>", "<Style/Shipment/Label>", "<Style/Shipment/ExtDesc6>", "<Style/Shipment/ExtDesc3>", "<Style/ProgramCode>", "<Style/Origin>", "<ExtTerm3>", "<ExtTerm5>", "<Style/Shipment/ExtDesc7>", "<Style/Shipment/ExtDesc8>", "<Style/Shipment/ExtDesc9>"]
   const handleClick = () => {
-    // console.log(expData)
     if (error.length === 0) {
       const workbook = XLSX.utils.book_new()
       const worksheet = XLSX.utils.json_to_sheet(expData, { origin: "A3" })
@@ -144,6 +143,11 @@ function App() {
     return num < 10 ? '0' + num : num
   }
   const fileChange = (e) => {
+    if (factory === '' || season === '' || buymonth === '') {
+      alert('請先選擇Factory, Season, Buymonth後再上傳檔案!')
+      e.target.value = ''
+      return
+    }
     const file = e.target.files[0]
     let reader = new FileReader()
     reader.readAsBinaryString(file)
@@ -474,7 +478,6 @@ function App() {
         setError([...errorList])
       } else {
         setExpData([...list])
-        console.log(expData)
       }
     }
   }
