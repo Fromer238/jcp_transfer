@@ -129,6 +129,16 @@ function App() {
     "16 PETITE": "Z16P",
     "18 PETITE": "Z18P",
     "20 PETITE": "Z20P",
+    "2 PETITE SHORT": "Z2PS",
+    "4 PETITE SHORT": "Z4PS",
+    "6 PETITE SHORT": "Z6PS",
+    "8 PETITE SHORT": "Z8PS",
+    "10 PETITE SHORT": "Z10PS",
+    "12 PETITE SHORT": "Z12PS",
+    "14 PETITE SHORT": "Z14PS",
+    "16 PETITE SHORT": "Z16PS",
+    "18 PETITE SHORT": "Z18PS",
+    "20 PETITE SHORT": "Z20PS",
     "16W": "Z16W",
     "18W": "Z18W",
     "20W": "Z20W",
@@ -189,6 +199,12 @@ function App() {
                         switch (sizeStrLastWord) {
                           case "E":
                             if (sizeStrArray[sizeStrArray.length - 1] === "PETITE") {
+                              return "P"
+                            } else {
+                              return "M"
+                            }
+                          case "T":
+                            if (sizeStrArray[sizeStrArray.length - 1] === "SHORT") {
                               return "P"
                             } else {
                               return "M"
@@ -296,6 +312,12 @@ function App() {
                             } else {
                               return "M"
                             }
+                          case "T":
+                            if (sizeStrArray[sizeStrArray.length - 1] === "SHORT") {
+                              return "P"
+                            } else {
+                              return "M"
+                            }
                           case "L":
                             if (sizeStrArray[sizeStrArray.length - 1] === "TALL") {
                               return "T"
@@ -390,6 +412,12 @@ function App() {
                         switch (sizeStrLastWord) {
                           case "E":
                             if (sizeStrArray[sizeStrArray.length - 1] === "PETITE") {
+                              return "P"
+                            } else {
+                              return "M"
+                            }
+                          case "T":
+                            if (sizeStrArray[sizeStrArray.length - 1] === "SHORT") {
                               return "P"
                             } else {
                               return "M"
