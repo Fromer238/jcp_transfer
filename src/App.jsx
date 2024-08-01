@@ -147,6 +147,25 @@ function App() {
     "26W": "Z26W",
     "28W": "Z28W",
     "30W": "Z30W",
+    "28": "Z28",
+    "30": "Z30",
+    "32": "Z32",
+    "34": "Z34",
+    "36": "Z36",
+    "38": "Z38",
+    "40": "Z40",
+    "42": "Z42",
+    "44": "Z44",
+    "46": "Z46",
+    "48": "Z48",
+    "50": "Z50",
+    "52": "Z52",
+    "54": "Z54",
+    "56": "Z56",
+    "58": "Z58",
+    "60": "Z60",
+    "62": "Z62",
+    "64": "Z64"
   }
 
   const formatMonthAndDate = (num) => {
@@ -174,6 +193,7 @@ function App() {
       for (let name of wb.SheetNames) {
         let sheet = XLSX.utils.sheet_to_json(wb.Sheets[name])
         // console.log(sheet)
+        console.log(sheet[1])
         if (sheet[11]) {
           switch (sheet[11]["__EMPTY"]) {
             case "Color Desc":
