@@ -225,7 +225,27 @@ function App() {
     "58X32": "Z58X32",
     "60X32": "Z60X32",
     "62X32": "Z62X32",
-    "64X32": "Z64X32"
+    "64X32": "Z64X32",
+    "2 SHORT":"Z2 SHORT",
+    "4 SHORT":"Z4 SHORT",
+    "6 SHORT":"Z6 SHORT",
+    "8 SHORT":"Z8 SHORT",
+    "10 SHORT":"Z10 SHORT",
+    "12 SHORT":"Z12 SHORT",
+    "14 SHORT":"Z14 SHORT",
+    "16 SHORT":"Z16 SHORT",
+    "18 SHORT":"Z18 SHORT",
+    "20 SHORT":"Z20 SHORT",
+    "2 LONG":"Z2 LONG",
+    "4 LONG":"Z4 LONG",
+    "6 LONG":"Z6 LONG",
+    "8 LONG":"Z8 LONG",
+    "10 LONG":"Z10 LONG",
+    "12 LONG":"Z12 LONG",
+    "14 LONG":"Z14 LONG",
+    "16 LONG":"Z16 LONG",
+    "18 LONG":"Z18 LONG",
+    "20 LONG":"Z20 LONG",
   }
 
   const formatMonthAndDate = (num) => {
