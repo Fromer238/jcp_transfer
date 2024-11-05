@@ -246,6 +246,22 @@ function App() {
     "16 LONG":"Z16 LONG",
     "18 LONG":"Z18 LONG",
     "20 LONG":"Z20 LONG",
+    "16W SHORT":"Z16W SHORT",
+    "18W SHORT":"Z18W SHORT",
+    "20W SHORT":"Z20W SHORT",
+    "22W SHORT":"Z22W SHORT",
+    "24W SHORT":"Z24W SHORT",
+    "26W SHORT":"Z26W SHORT",
+    "28W SHORT":"Z28W SHORT",
+    "30W SHORT":"Z30W SHORT",
+    "16W LONG":"Z16W LONG",
+    "18W LONG":"Z18W LONG",
+    "20W LONG":"Z20W LONG",
+    "22W LONG":"Z22W LONG",
+    "24W LONG":"Z24W LONG",
+    "26W LONG":"Z26W LONG",
+    "28W LONG":"Z28W LONG",
+    "30W LONG":"Z30W LONG"
   }
 
   const formatMonthAndDate = (num) => {
